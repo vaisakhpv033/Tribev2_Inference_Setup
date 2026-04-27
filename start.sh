@@ -49,7 +49,7 @@ nohup uvicorn app.main:app --host 0.0.0.0 --port 8000 > api.log 2>&1 &
 echo "      FastAPI started (PID $!)"
 
 # Start Celery Worker in background (concurrency 1 for GPU safety)
-nohup celery -A app.worker.celery_app worker --loglevel=info --concurrency=1 > worker.log 2>&1 &
+nohup celery -A app.worker.celery_app worker --loglevel=info --pool=solo > worker.log 2>&1 &
 echo "      Celery Worker started (PID $!)"
 
 # Start Celery Beat for scheduled cleanup
@@ -57,12 +57,13 @@ nohup celery -A app.worker.celery_app beat --loglevel=info > beat.log 2>&1 &
 echo "      Celery Beat started (PID $!)"
 
 # Wait a moment and verify API is up
-sleep 3
-if curl -s http://localhost:8000/docs > /dev/null; then
+sleep 4
+if (echo > /dev/tcp/localhost/8000) 2>/dev/null; then
     echo ""
     echo "========================================="
     echo " All services are running!"
-    echo " API Docs: http://localhost:8000/docs"
+    echo " API Docs: http://0.0.0.0:8000/docs"
+    echo " Expose port 8000 via RunPod to access externally."
     echo " Logs: api.log | worker.log | beat.log"
     echo "========================================="
 else
