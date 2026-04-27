@@ -4,13 +4,13 @@
 if ! command -v redis-server &> /dev/null
 then
     echo "Redis not found. Installing Redis..."
-    sudo apt-get update
-    sudo apt-get install -y redis-server
+    apt-get update
+    apt-get install -y redis-server
 fi
 
 # Start Redis service
 echo "Starting Redis server..."
-sudo service redis-server start
+service redis-server start
 
 # Create jobs directory
 mkdir -p jobs
