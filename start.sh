@@ -5,6 +5,23 @@ echo "========================================="
 echo " TRIBEv2 Inference Pipeline Setup"
 echo "========================================="
 
+# --- Register this script to run on pod restart (via cron @reboot) ---
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+CRON_JOB="@reboot cd $SCRIPT_DIR && bash start.sh >> /workspace/startup.log 2>&1"
+( crontab -l 2>/dev/null | grep -qF "start.sh" ) || ( crontab -l 2>/dev/null; echo "$CRON_JOB" ) | crontab -
+service cron start > /dev/null 2>&1 || true
+
+# --- Generate .env from RunPod environment variables (if not already present) ---
+if [ ! -f .env ]; then
+    echo "Generating .env from environment variables..."
+    cat > .env <<EOF
+DATABASE_URL=sqlite:///./tribev2_jobs.db
+CELERY_BROKER_URL=redis://localhost:6379/0
+CELERY_RESULT_BACKEND=redis://localhost:6379/0
+HF_TOKEN=${HF_TOKEN:-}
+EOF
+fi
+
 # --- Step 1: System Dependencies ---
 echo ""
 echo "[1/5] Installing system dependencies (ffmpeg, redis)..."
