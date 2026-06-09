@@ -24,6 +24,9 @@ echo ""
 echo "      Installing TRIBEv2 and dependencies (this may take a few minutes)..."
 uv pip install --system "tribev2[plotting] @ git+https://github.com/facebookresearch/tribev2.git"
 
+# Add this line right below it to fix the neuralset dependency!
+uv pip install --system "exca<0.5.0"
+
 # --- Step 3: Start Redis ---
 echo ""
 echo "[3/5] Starting Redis server..."
