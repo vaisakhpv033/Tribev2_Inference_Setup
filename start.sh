@@ -17,7 +17,7 @@ echo "[2/5] Installing Python packages (uv for speed)..."
 pip install -q uv
 
 echo "      Installing completely locked environment from requirements-frozen.txt..."
-uv pip install --system -r requirements-frozen.txt --extra-index-url https://download.pytorch.org/whl/cu124
+uv pip install --system -r requirements-frozen.txt --extra-index-url https://download.pytorch.org/whl/cu124 --index-strategy unsafe-best-match
 
 # --- Step 3: Start Redis ---
 echo ""
