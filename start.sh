@@ -16,16 +16,8 @@ echo ""
 echo "[2/5] Installing Python packages (uv for speed)..."
 pip install -q uv
 
-# Install lightweight web packages first (fast)
-uv pip install --system fastapi==0.110.0 uvicorn==0.27.1 python-multipart==0.0.9 celery==5.3.6 redis==5.0.2 SQLAlchemy==2.0.27
-
-# Install tribev2 (this is the large one - takes a few minutes)
-echo ""
-echo "      Installing TRIBEv2 and dependencies (this may take a few minutes)..."
-uv pip install --system "tribev2[plotting] @ git+https://github.com/facebookresearch/tribev2.git"
-
-echo "      Pinning exca version to fix neuralset crash..."
-uv pip install --system "exca==0.5.20"
+echo "      Installing completely locked environment from requirements-frozen.txt..."
+uv pip install --system -r requirements-frozen.txt
 
 # --- Step 3: Start Redis ---
 echo ""
@@ -60,7 +52,7 @@ nohup celery -A app.worker.celery_app beat --loglevel=info > beat.log 2>&1 &
 echo "      Celery Beat started (PID $!)"
 
 # Wait a moment and verify API is up
-sleep 4
+sleep 20
 if (echo > /dev/tcp/localhost/8000) 2>/dev/null; then
     echo ""
     echo "========================================="
